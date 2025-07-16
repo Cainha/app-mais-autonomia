@@ -1,12 +1,41 @@
 // src/screens/LoginScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { useEffect } from 'react';
 
 export default function LoginScreen() {
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [lembrar, setLembrar] = useState(false);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '852847633507-027moc64gnq0drp88f5mi1rhqf5tp5k2.apps.googleusercontent.com', 
+    });
+  }, []);
+
+  const signInWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const { idToken } = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      await auth().signInWithCredential(googleCredential);
+      Alert.alert('Login realizado com sucesso!');
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert('Login cancelado pelo usuário.');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('Login em andamento.');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Google Play Services não disponível.');
+      } else {
+        Alert.alert('Erro ao fazer login com Google', error.message);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -52,7 +81,7 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.socialButton}>
         <Text>Continuar com Gov.br</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.socialButton}>
+      <TouchableOpacity style={styles.socialButton} onPress={signInWithGoogle}>
         <Text>Continuar com Google</Text>
       </TouchableOpacity>
 
