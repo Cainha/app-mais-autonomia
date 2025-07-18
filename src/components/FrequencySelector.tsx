@@ -1,25 +1,38 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 
 interface FrequencySelectorProps {
-  options: string[];
-  selected: string;
-  onSelect: (option: string) => void;
+  value: string;
+  onChange: (value: string) => void;
 }
 
-const FrequencySelector: React.FC<FrequencySelectorProps> = ({ options, selected, onSelect }) => (
-  <View style={styles.container}>
-    {options.map((option) => (
-      <TouchableOpacity
-        key={option}
-        style={[styles.button, selected === option && styles.selected]}
-        onPress={() => onSelect(option)}
-      >
-        <Text style={[styles.text, selected === option && styles.selectedText]}>{option}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-);
+const frequencies = [
+  'Diariamente',
+  'Intercalado',
+  'A cada 2 dias',
+];
+
+export default function FrequencySelector({ value, onChange }: FrequencySelectorProps) {
+  return (
+    <View style={styles.container}>
+      {frequencies.map((frequency, index) => (
+        <TouchableOpacity
+          key={index}
+          style={[
+            styles.chip,
+            value === frequency && styles.chipSelected,
+          ]}
+          onPress={() => onChange(frequency)}
+        >
+          <Text style={[
+            styles.chipText,
+            value === frequency && styles.chipTextSelected,
+          ]}>{frequency}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -27,23 +40,26 @@ const styles = StyleSheet.create({
     gap: 8,
     marginVertical: 8,
   },
-  button: {
-    paddingHorizontal: 12,
+  chip: {
     paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#e3f2fd',
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#b3d1fa',
+    backgroundColor: '#fff',
     marginRight: 8,
   },
-  selected: {
-    backgroundColor: '#1565c0',
+  chipSelected: {
+    backgroundColor: '#eaf3ff',
+    borderColor: '#1565c0',
   },
-  text: {
+  chipText: {
     color: '#1565c0',
+    fontWeight: '500',
+    fontSize: 15,
   },
-  selectedText: {
-    color: '#fff',
+  chipTextSelected: {
+    color: '#1565c0',
     fontWeight: 'bold',
   },
-});
-
-export default FrequencySelector; 
+}); 

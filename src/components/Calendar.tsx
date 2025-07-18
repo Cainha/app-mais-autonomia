@@ -1,37 +1,32 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-interface TimeInputProps {
+interface CalendarProps {
   value: Date;
   onChange: (date: Date) => void;
+  placeholder?: string;
 }
 
-export default function TimeInput({ value, onChange }: TimeInputProps) {
+export default function Calendar({ value, onChange, placeholder = 'dd/mm/aaaa' }: CalendarProps) {
   const [open, setOpen] = useState(false);
-  const formatTime = (date: Date) => {
-    const h = date.getHours().toString().padStart(2, '0');
-    const m = date.getMinutes().toString().padStart(2, '0');
-    return { h, m };
-  };
-  const { h, m } = formatTime(value);
+  const formatDate = (date: Date) => date ? date.toLocaleDateString('pt-BR') : placeholder;
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.input} onPress={() => setOpen(true)}>
-        <Text style={styles.time}>{h}</Text>
-        <Text style={styles.colon}> : </Text>
-        <Text style={styles.time}>{m}</Text>
+        <Icon name="calendar-today" size={22} color="#1565c0" style={{marginRight: 8}} />
+        <Text style={[styles.text, !value && styles.placeholder]}>{formatDate(value)}</Text>
       </TouchableOpacity>
       <Modal visible={open} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <DatePicker
-              date={value}
+              date={value || new Date()}
               onDateChange={onChange}
-              mode="time"
+              mode="date"
               locale="pt-BR"
               androidVariant="nativeAndroid"
-              is24hourSource="locale"
             />
             <TouchableOpacity style={styles.closeButton} onPress={() => setOpen(false)}>
               <Text style={styles.closeButtonText}>Confirmar</Text>
@@ -47,26 +42,17 @@ const styles = StyleSheet.create({
   input: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#eaf3ff',
+    width: '100%',
+    height: 44,
+    backgroundColor: '#fff',
     borderRadius: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#b3d1fa',
+    paddingHorizontal: 12,
     marginVertical: 8,
   },
-  time: {
-    fontSize: 32,
-    color: '#1565c0',
-    fontWeight: 'bold',
-    minWidth: 40,
-    textAlign: 'center',
-  },
-  colon: {
-    fontSize: 32,
-    color: '#1565c0',
-    fontWeight: 'bold',
-    marginHorizontal: 4,
-  },
+  text: { fontSize: 16, color: '#222' },
+  placeholder: { color: '#999' },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
