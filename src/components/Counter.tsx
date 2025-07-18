@@ -1,47 +1,73 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 
 interface CounterProps {
   value: number;
-  onIncrement: () => void;
-  onDecrement: () => void;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
 }
 
-const Counter: React.FC<CounterProps> = ({ value, onIncrement, onDecrement }) => (
-  <View style={styles.container}>
-    <TouchableOpacity onPress={onDecrement} style={styles.button}>
-      <Text style={styles.buttonText}>-</Text>
-    </TouchableOpacity>
-    <Text style={styles.value}>{value}</Text>
-    <TouchableOpacity onPress={onIncrement} style={styles.button}>
-      <Text style={styles.buttonText}>+</Text>
-    </TouchableOpacity>
-  </View>
-);
+export default function Counter({ value, onChange, min = 0, max = 999 }: CounterProps) {
+  const handleIncrement = () => {
+    if (value < max) onChange(value + 1);
+  };
+  const handleDecrement = () => {
+    if (value > min) onChange(value - 1);
+  };
+  const handleInputChange = (text: string) => {
+    const num = parseInt(text.replace(/\D/g, '')) || 0;
+    if (num >= min && num <= max) onChange(num);
+  };
+  return (
+    <View style={styles.wrapper}>
+      <TouchableOpacity style={styles.button} onPress={handleDecrement}>
+        <Text style={styles.buttonText}>-</Text>
+      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        value={value.toString()}
+        onChangeText={handleInputChange}
+        keyboardType="numeric"
+        textAlign="center"
+        maxLength={3}
+      />
+      <TouchableOpacity style={styles.button} onPress={handleIncrement}>
+        <Text style={styles.buttonText}>+</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#e3f2fd',
-    borderRadius: 8,
-    padding: 8,
+    backgroundColor: '#eaf3ff',
+    borderRadius: 12,
+    padding: 12,
+    justifyContent: 'center',
+    marginVertical: 8,
   },
   button: {
-    padding: 8,
-    backgroundColor: '#bbdefb',
-    borderRadius: 8,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#1565c0',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 8,
   },
   buttonText: {
-    fontSize: 18,
+    color: '#fff',
+    fontSize: 28,
     fontWeight: 'bold',
   },
-  value: {
-    fontSize: 18,
-    minWidth: 32,
-    textAlign: 'center',
+  input: {
+    width: 60,
+    fontSize: 24,
+    color: '#222',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
-});
-
-export default Counter; 
+}); 
