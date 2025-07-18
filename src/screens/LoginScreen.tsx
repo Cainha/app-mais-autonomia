@@ -3,10 +3,22 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import auth from '@react-native-firebase/auth';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes, User as GoogleUser } from '@react-native-google-signin/google-signin';
 import { useEffect } from 'react';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-export default function LoginScreen() {
+// Defina o tipo das rotas do Stack
+ type RootStackParamList = {
+   Login: undefined;
+   Main: undefined;
+   AdicionarMedicamento: undefined;
+ };
+
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
+}
+
+export default function LoginScreen({ navigation }: Props) {
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [lembrar, setLembrar] = useState(false);
@@ -19,22 +31,55 @@ export default function LoginScreen() {
 
   const signInWithGoogle = async () => {
     try {
-      await GoogleSignin.hasPlayServices();
-      const { idToken } = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      await auth().signInWithCredential(googleCredential);
-      Alert.alert('Login realizado com sucesso!');
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        Alert.alert('Login cancelado pelo usuário.');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        Alert.alert('Login em andamento.');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert('Google Play Services não disponível.');
+      // Verifica se o Google Play Services está disponível
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      
+      // Faz o sign-in
+      const userInfo = await GoogleSignin.signIn();
+      
+      if (!userInfo.idToken) {
+        throw new Error('Não foi possível obter o token do Google');
+      }
+
+      // Tenta fazer login no backend
+      const response = await fetch('http://10.0.2.2:3000/login-google', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ idToken: userInfo.idToken }),
+      });
+
+      const data = await response.json();
+      
+      if (data.sucesso) {
+        navigation.replace('Main');
       } else {
-        Alert.alert('Erro ao fazer login com Google', error.message);
+        Alert.alert('Erro no login', data.mensagem || 'Não foi possível fazer login');
+      }
+    } catch (error) {
+      console.error('Erro completo:', error);
+      
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert('Login cancelado', 'Você cancelou o login com Google');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('Processo em andamento', 'Operação de login já está em andamento');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Google Play Services não disponível', 'Instale ou atualize o Google Play Services');
+      } else {
+        Alert.alert(
+          'Erro ao fazer login com Google',
+          'Verifique sua conexão com a internet e tente novamente'
+        );
       }
     }
+  };
+
+  const signInWithCpfSenha = async () => {
+    // Aqui você pode implementar a lógica real de autenticação com CPF e senha
+    // Se for sucesso:
+    navigation.replace('Main');
   };
 
   return (
@@ -73,7 +118,7 @@ export default function LoginScreen() {
       </View>
 
       {/* Botão Entrar */}
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={signInWithCpfSenha}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
