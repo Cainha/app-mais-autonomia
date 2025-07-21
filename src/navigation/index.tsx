@@ -28,6 +28,11 @@ export default function AppNavigator() {
         component={AdicionarMedicamentoScreen}
         options={{ title: 'Adicionar Medicamento' }}
       />
+      <Stack.Screen
+        name="EditarMedicamento"
+        component={AdicionarMedicamentoScreen}
+        options={{ title: 'Editar Medicamento' }}
+      />
     </Stack.Navigator>
   );
 }
