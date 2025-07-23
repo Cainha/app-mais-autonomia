@@ -2,8 +2,9 @@
 
 export type RootStackParamList = {
   Login: undefined;
-  Main: undefined;
+  Main: { screen?: string; novoMed?: any; editando?: boolean } | undefined;
   AdicionarMedicamento: undefined;
+  EditarMedicamento?: { medicamento: any };
 };
 
 // 👇 ATUALIZE ESTA PARTE

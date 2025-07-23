@@ -1,91 +1,114 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 interface ConfirmationModalProps {
   visible: boolean;
-  icon?: React.ReactNode;
   title: string;
   message: string;
-  confirmLabel: string;
-  cancelLabel: string;
+  confirmText: string;
+  cancelText: string;
   onConfirm: () => void;
   onCancel: () => void;
+  icon?: any;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+export default function ConfirmationModal({
   visible,
-  icon,
   title,
   message,
-  confirmLabel,
-  cancelLabel,
+  confirmText,
+  cancelText,
   onConfirm,
   onCancel,
-}) => (
-  <Modal visible={visible} transparent animationType="fade">
-    <View style={styles.overlay}>
-      <View style={styles.container}>
-        {icon && <View style={styles.icon}>{icon}</View>}
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.message}>{message}</Text>
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.cancel} onPress={onCancel}>
-            <Text>{cancelLabel}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.confirm} onPress={onConfirm}>
-            <Text>{confirmLabel}</Text>
-          </TouchableOpacity>
+  icon,
+}: ConfirmationModalProps) {
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={styles.overlay}>
+        <View style={styles.modalBox}>
+          {icon && <Image source={icon} style={styles.icon} />}
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.message}>{message}</Text>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={styles.cancelBtn} onPress={onCancel}>
+              <Text style={styles.cancelText}>{cancelText}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.confirmBtn} onPress={onConfirm}>
+              <Text style={styles.confirmText}>{confirmText}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+}
 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(0,0,0,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  container: {
-    backgroundColor: '#e3f2fd',
-    borderRadius: 12,
+  modalBox: {
+    backgroundColor: '#eaf3f9',
+    borderRadius: 16,
     padding: 24,
+    width: 320,
     alignItems: 'center',
-    minWidth: 260,
+    elevation: 8,
   },
   icon: {
-    marginBottom: 8,
+    width: 40,
+    height: 40,
+    marginBottom: 12,
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
+    color: '#222',
     marginBottom: 8,
     textAlign: 'center',
   },
   message: {
-    fontSize: 14,
-    marginBottom: 16,
+    fontSize: 15,
+    color: '#333',
+    marginBottom: 24,
     textAlign: 'center',
   },
-  actions: {
+  buttonRow: {
     flexDirection: 'row',
-    gap: 12,
+    justifyContent: 'center',
+    gap: 16,
   },
-  cancel: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#fff',
+  cancelBtn: {
+    backgroundColor: '#eaf3f9',
+    borderRadius: 24,
+    paddingHorizontal: 28,
+    paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#1565c0',
-    marginRight: 8,
+    borderColor: '#2196f3',
+    minWidth: 110,
+    alignItems: 'center',
   },
-  confirm: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#1565c0',
+  cancelText: {
+    color: '#2196f3',
+    fontWeight: 'bold',
+    fontSize: 17,
   },
-});
-
-export default ConfirmationModal; 
+  confirmBtn: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    paddingHorizontal: 28,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#2196f3',
+    minWidth: 110,
+    alignItems: 'center',
+  },
+  confirmText: {
+    color: '#2196f3',
+    fontWeight: 'bold',
+    fontSize: 17,
+  },
+}); 

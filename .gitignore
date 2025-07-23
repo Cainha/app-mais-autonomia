@@ -73,3 +73,14 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Credenciais e Segredos da Google
+# =================================
+# Arquivo de conta de serviço do Firebase Admin (lado do backend)
+serviceAccountKey.json
+
+# Arquivo de configuração do Android (contém API keys)
+/android/app/google-services.json
+
+# Arquivos de variáveis de ambiente
+.env
