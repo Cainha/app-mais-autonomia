@@ -1,23 +1,48 @@
+// src/components/Calendar.tsx
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Modal,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface CalendarProps {
-  value: Date;
+  value: Date | undefined;
   onChange: (date: Date) => void;
   placeholder?: string;
 }
 
-export default function Calendar({ value, onChange, placeholder = 'dd/mm/aaaa' }: CalendarProps) {
+export default function Calendar({
+  value,
+  onChange,
+  placeholder = 'dd/mm/aaaa',
+}: CalendarProps) {
   const [open, setOpen] = useState(false);
-  const formatDate = (date: Date) => date ? date.toLocaleDateString('pt-BR') : placeholder;
+  const formatDate = (date?: Date) =>
+    date ? date.toLocaleDateString('pt-BR') : placeholder;
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.input} onPress={() => setOpen(true)}>
-        <Icon name="calendar-today" size={22} color="#1565c0" style={{marginRight: 8}} />
-        <Text style={[styles.text, !value && styles.placeholder]}>{formatDate(value)}</Text>
+      <TouchableOpacity
+        style={styles.input}
+        onPress={() => setOpen(true)}
+      >
+        {/* ícone de calendário customizado */}
+        <Image
+          source={require('../assets/calendario.png')}
+          style={styles.icon}
+        />
+        <Text
+          style={[styles.text, !value && styles.placeholder]}
+        >
+          {formatDate(value)}
+        </Text>
       </TouchableOpacity>
+
       <Modal visible={open} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -28,7 +53,10 @@ export default function Calendar({ value, onChange, placeholder = 'dd/mm/aaaa' }
               locale="pt-BR"
               androidVariant="nativeAndroid"
             />
-            <TouchableOpacity style={styles.closeButton} onPress={() => setOpen(false)}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setOpen(false)}
+            >
               <Text style={styles.closeButtonText}>Confirmar</Text>
             </TouchableOpacity>
           </View>
@@ -37,44 +65,55 @@ export default function Calendar({ value, onChange, placeholder = 'dd/mm/aaaa' }
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  container: { width: '100%' },
+  container: {
+    width: '100%',
+  },
   input: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
-    height: 44,
-    backgroundColor: '#fff',
-    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#b3d1fa',
-    paddingHorizontal: 12,
-    marginVertical: 8,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
   },
-  text: { fontSize: 16, color: '#222' },
-  placeholder: { color: '#999' },
+  icon: {
+    width: 22,
+    height: 22,
+    marginRight: 8,
+  },
+  text: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  placeholder: {
+    color: '#999',
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
+    backgroundColor: '#fff',
     borderRadius: 12,
+    padding: 24,
+    width: 300,
     alignItems: 'center',
   },
   closeButton: {
-    marginTop: 20,
+    marginTop: 16,
     backgroundColor: '#1565c0',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
     borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
   },
   closeButtonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
-}); 
+});
